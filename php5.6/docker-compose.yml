@@ -1,0 +1,55 @@
+version: '3.5'
+services:
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: ./.Docker/php/Dockerfile
+    # image: reviewsupport-api/php
+    platform: linux/amd64
+    restart: unless-stopped
+    extra_hosts:
+      - "system-admin.test:192.168.3.107"
+    external_links:
+      - webserver:new-b2c.test
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./.Docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./.Docker/php/log:/var/log/php
+      # - ./.Docker/php/etc/ImageMagick-6/policy.xml:/etc/ImageMagick-6/policy.xml
+    networks:
+      - new_b2c
+  
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./.Docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./.Docker/ssl:/etc/nginx/ssl
+    networks:
+      - new_b2c
+    depends_on:
+      - app
+
+#Docker Networks
+networks:
+  new_b2c:
+    name: new_b2c
+    driver: bridge
+
+#Volumes
+volumes:
+  document_hunter_data:
+    driver: local
