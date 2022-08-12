@@ -5,13 +5,10 @@ services:
     build:
       context: .
       dockerfile: ./.Docker/php/Dockerfile
-    # image: reviewsupport-api/php
     platform: linux/amd64
     restart: unless-stopped
-    extra_hosts:
-      - "system-admin.test:192.168.3.107"
     external_links:
-      - webserver:new-b2c.test
+      - webserver:docker.local
     tty: true
     environment:
       SERVICE_NAME: app
@@ -21,9 +18,8 @@ services:
       - ./:/var/www
       - ./.Docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
       - ./.Docker/php/log:/var/log/php
-      # - ./.Docker/php/etc/ImageMagick-6/policy.xml:/etc/ImageMagick-6/policy.xml
     networks:
-      - new_b2c
+      - docker_network
   
 
   #Nginx Service
@@ -39,17 +35,17 @@ services:
       - ./.Docker/nginx/conf.d/:/etc/nginx/conf.d/
       - ./.Docker/ssl:/etc/nginx/ssl
     networks:
-      - new_b2c
+      - docker_network
     depends_on:
       - app
 
 #Docker Networks
 networks:
-  new_b2c:
-    name: new_b2c
+  docker_network:
+    name: docker_network
     driver: bridge
 
 #Volumes
 volumes:
-  document_hunter_data:
+  docker_data:
     driver: local

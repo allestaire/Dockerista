@@ -14,4 +14,4 @@ keyUsage = critical, digitalSignature, keyAgreement
 extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = new-b2c.test
+DNS.1 = docker.local
