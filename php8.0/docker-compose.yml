@@ -7,6 +7,8 @@ services:
                 WWWGROUP: '${WWWGROUP}'
         volumes:
             - './:/var/www'
+            - /var/www/.Docker
+            - /var/app/ssl
         networks:
             - docker_network
     mysql:
