@@ -35,6 +35,12 @@ RUN docker-php-ext-install gd
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+RUN mkdir -p /var/app/ssl
+
+COPY .Docker/ssl /var/ssl
+
+RUN openssl req -x509 -nodes -days 730 -newkey rsa:2048 -keyout /var/app/ssl/docker.key -out /var/app/ssl/docker.pem -config /var/ssl/req.cnf -sha256
+
 # Add user for laravel application
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
