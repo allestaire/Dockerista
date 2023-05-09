@@ -1,0 +1,40 @@
+FROM php:8.1-fpm-alpine
+
+RUN apk add --no-cache --virtual .build-deps \
+    openssh \
+    $PHPIZE_DEPS \
+    curl-dev \
+    libtool \
+    libxml2-dev \
+    libzip-dev \
+    libpng-dev \
+    oniguruma-dev \
+  && apk add --no-cache \
+    curl \
+    git \
+    mysql-client \
+    libintl \
+    icu \
+    icu-dev \
+    libzip-dev \
+  && docker-php-ext-install \
+    bcmath \
+    curl \
+    mbstring \
+    pdo \
+    pdo_mysql \
+    pcntl \
+    xml \
+    zip \
+    intl \
+    soap \
+    gd \
+  && curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
+
+RUN mkdir -p /var/app/ssl
+
+COPY .Docker/ssl /var/ssl
+
+RUN openssl req -x509 -nodes -days 730 -newkey rsa:2048 -keyout /var/app/ssl/docker.key -out /var/app/ssl/docker.pem -config /var/ssl/req.cnf -sha256
+
+WORKDIR /var/www
